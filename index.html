@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Military Quest</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700;800&family=Russo+One&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="background-grid" aria-hidden="true"></div>
+
+    <main class="app-shell">
+      <section class="panel login-panel" id="loginPanel">
+        <p class="eyebrow">Quest Authorization</p>
+        <h1>Military Team Access</h1>
+        <p class="panel-copy">
+          Введи <strong>Team 1</strong> або <strong>Team 2</strong>, щоб
+          відкрити контент потрібної команди.
+        </p>
+
+        <form id="loginForm" class="login-form">
+          <label for="teamInput" class="input-label">Team Identifier</label>
+          <input
+            id="teamInput"
+            name="team"
+            type="text"
+            autocomplete="off"
+            placeholder="Team 1"
+            class="team-input"
+          />
+
+          <div class="quick-select">
+            <button type="button" class="ghost-button" data-team="Team 1">
+              Team 1
+            </button>
+            <button type="button" class="ghost-button" data-team="Team 2">
+              Team 2
+            </button>
+          </div>
+
+          <button type="submit" class="primary-button">Відкрити місію</button>
+          <p id="errorMessage" class="error-message" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="panel home-panel hidden" id="homePanel">
+        <div class="panel-header">
+          <div>
+            <p class="eyebrow">Mission Dashboard</p>
+            <h2 id="teamHeading">Команда 1</h2>
+          </div>
+          <button type="button" id="logoutButton" class="ghost-button">
+            Змінити команду
+          </button>
+        </div>
+
+        <div class="tabs-shell">
+          <div class="tabs" role="tablist" aria-label="Mission sections">
+            <button
+              type="button"
+              class="tab-button active"
+              id="quizTabButton"
+              role="tab"
+              aria-selected="true"
+            >
+              Квіз
+            </button>
+            <button
+              type="button"
+              class="tab-button"
+              id="radarTabButton"
+              role="tab"
+              aria-selected="false"
+            >
+              Радар
+            </button>
+            <button
+              type="button"
+              class="tab-button"
+              id="videoTabButton"
+              role="tab"
+              aria-selected="false"
+            >
+              Відео
+            </button>
+            <button
+              type="button"
+              class="tab-button"
+              id="accessTabButton"
+              role="tab"
+              aria-selected="false"
+            >
+              Код
+            </button>
+          </div>
+
+          <section class="tab-panel" id="quizTabPanel" role="tabpanel">
+            <div class="quiz-header">
+              <div>
+                <p class="content-label">Team Quiz</p>
+                <h3 id="quizTitle">Operation Knowledge Check</h3>
+              </div>
+              <button type="button" id="resetQuizButton" class="ghost-button">
+                Почати заново
+              </button>
+            </div>
+
+            <div class="quiz-progress">
+              <div class="quiz-progress-bar">
+                <span id="quizProgressFill"></span>
+              </div>
+              <p id="quizProgressText" class="progress-text"></p>
+            </div>
+
+            <div id="quizContainer" class="quiz-list"></div>
+            <div id="quizResultOverlay" class="quiz-result-overlay hidden" aria-live="polite">
+              <div id="quizResultCard" class="quiz-result-card">
+                <p id="quizResultLabel" class="quiz-result-label"></p>
+                <h4 id="quizResultTitle" class="quiz-result-title"></h4>
+                <p id="quizResultSubtitle" class="quiz-result-subtitle"></p>
+              </div>
+            </div>
+          </section>
+
+	          <section class="tab-panel hidden" id="radarTabPanel" role="tabpanel">
+	            <div class="radar-screen">
+	              <div class="radar-topbar">
+	                <div class="radar-mission">
+	                  <p class="content-label">Радар</p>
+	                  <h3 id="radarTitle">Операція "Радар"</h3>
+	                  <p id="radarOverview" class="radar-overview">
+	                    Запам’ятай розташування 6 предметів, а потім поверни їх на правильні координати.
+	                  </p>
+	                </div>
+	
+	                <div class="radar-toolbar">
+	                  <div class="radar-timer-card">
+	                    <p class="content-label">Таймер</p>
+	                    <p id="radarTimer" class="radar-timer-value">00:30</p>
+	                  </div>
+	
+	                  <div class="radar-size-control">
+	                    <label for="radarSizeSlider" class="radar-size-label">Розмір поля</label>
+	                    <div class="radar-size-input-row">
+	                      <input
+	                        type="range"
+	                        id="radarSizeSlider"
+	                        class="radar-size-slider"
+	                        min="54"
+	                        max="86"
+	                        step="2"
+	                        value="68"
+	                      />
+	                      <span id="radarSizeValue" class="radar-size-value">68%</span>
+	                    </div>
+	                  </div>
+	                </div>
+	              </div>
+	
+	              <div class="radar-layout">
+	                <div class="radar-center-column">
+	                  <p id="radarInstruction" class="radar-instruction" aria-hidden="true"></p>
+
+	                  <div class="radar-board-shell">
+	                    <div id="radarGrid" class="radar-grid"></div>
+	                    <div id="radarCountdownOverlay" class="radar-countdown-overlay hidden">
+	                      <div id="radarCountdownValue" class="radar-countdown-value">3</div>
+	                    </div>
+	                    <div id="radarScanOverlay" class="radar-scan-overlay hidden">
+	                      <div class="radar-scan-ring"></div>
+	                      <div class="radar-scan-line"></div>
+	                      <div class="radar-scan-text" id="radarScanText">Сканування...</div>
+	                    </div>
+	                  </div>
+	
+	                  <div class="radar-actions radar-actions-bottom">
+	                    <button type="button" id="startRadarButton" class="primary-button">
+	                      Старт
+	                    </button>
+	                    <button type="button" id="checkRadarButton" class="ghost-button hidden">
+	                      Перевірити
+	                    </button>
+	                  </div>
+	                </div>
+	
+	                <aside class="radar-side-column radar-items-column hidden">
+	                  <p class="content-label">Елементи</p>
+	                  <div id="radarTray" class="radar-tray hidden"></div>
+	                </aside>
+	              </div>
+	
+	              <div id="radarResultBanner" class="radar-result-banner hidden">
+	                <h4 id="radarResultTitle">Розташуйте елементи на свої місця</h4>
+	                <p id="radarResultSubtitle">Перетягни всі 6 елементів на правильні координати.</p>
+	              </div>
+	            </div>
+
+	            <div id="radarFinalOverlay" class="radar-final-overlay hidden" aria-live="polite">
+	              <div id="radarFinalCard" class="radar-final-card">
+	                <p id="radarFinalLabel" class="radar-final-label">Місію завершено</p>
+	                <h4 id="radarFinalTitle" class="radar-final-title">Ви знайшли 0 з 6</h4>
+	                <p id="radarFinalSubtitle" class="radar-final-subtitle">
+	                  Гарна робота. Радар завершив звірку всіх позицій.
+	                </p>
+	              </div>
+	            </div>
+	          </section>
+
+            <section class="tab-panel hidden" id="videoTabPanel" role="tabpanel">
+              <div class="video-panel">
+                <div class="video-panel-header">
+                  <div>
+                    <p class="content-label">Відео</p>
+                    <h3 class="video-title">Відео для місії</h3>
+                  </div>
+
+                  <div class="video-switcher" aria-label="Перемикання відео">
+                    <button type="button" class="video-switch-button active" data-video-key="w">W</button>
+                    <button type="button" class="video-switch-button" data-video-key="a">A</button>
+                    <button type="button" class="video-switch-button" data-video-key="s">S</button>
+                    <button type="button" class="video-switch-button" data-video-key="d">D</button>
+                  </div>
+                </div>
+
+                <div class="video-shell">
+                  <video
+                    id="missionVideo"
+                    class="mission-video"
+                    src="./assets/insf.mp4"
+                    autoplay
+                    loop
+                    playsinline
+                    controls
+                  ></video>
+                  <div id="videoTransitionOverlay" class="video-transition-overlay hidden" aria-hidden="true">
+                    <div class="video-transition-noise"></div>
+                    <div class="video-transition-scanline"></div>
+                    <div class="video-transition-label">TACTICAL SIGNAL SWITCH</div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <section class="tab-panel hidden" id="accessTabPanel" role="tabpanel">
+              <div class="access-panel">
+                <div class="access-panel-header">
+                  <div>
+                    <p class="content-label">Код доступу</p>
+                    <h3 id="accessTitle" class="access-title">Контроль доступу</h3>
+                    <p class="access-copy">
+                      Введи 4 символи коду. Якщо код правильний — доступ буде дозволено.
+                    </p>
+                  </div>
+                </div>
+
+                <form id="accessForm" class="access-form" autocomplete="off">
+                  <div class="access-inputs" id="accessInputs">
+                    <input type="text" inputmode="text" maxlength="1" class="access-code-input" data-index="0" />
+                    <input type="text" inputmode="text" maxlength="1" class="access-code-input" data-index="1" />
+                    <input type="text" inputmode="text" maxlength="1" class="access-code-input" data-index="2" />
+                    <input type="text" inputmode="text" maxlength="1" class="access-code-input" data-index="3" />
+                  </div>
+
+                  <div class="access-actions">
+                    <button type="submit" class="primary-button">Підтвердити код</button>
+                    <button type="button" id="accessResetButton" class="ghost-button">Очистити</button>
+                  </div>
+                </form>
+              </div>
+
+              <div id="accessResultOverlay" class="access-result-overlay hidden" aria-live="polite">
+                <div id="accessResultCard" class="access-result-card">
+                  <p id="accessResultLabel" class="access-result-label">Перевірка доступу</p>
+                  <h4 id="accessResultTitle" class="access-result-title">Код невірний</h4>
+                  <p id="accessResultSubtitle" class="access-result-subtitle">Доступ заборонений.</p>
+                </div>
+              </div>
+
+              <div id="accessGateOverlay" class="access-gate-overlay hidden" aria-live="polite">
+                <div class="access-gate-door access-gate-door-left"></div>
+                <div class="access-gate-door access-gate-door-right"></div>
+                <div class="access-gate-message">
+                  <p class="access-gate-label">Доступ підтверджено</p>
+                  <h4 class="access-gate-title">Вітаємо, ви пройшли цей квест</h4>
+                  <p class="access-gate-copy">Дякуємо за участь.</p>
+                </div>
+              </div>
+            </section>
+	        </div>
+	      </section>
+    </main>
+
+    <script src="./team-content.js"></script>
+    <script src="./quiz-data.js"></script>
+    <script src="./radar-data.js"></script>
+    <script src="./access-codes.js"></script>
+    <script src="./script.js"></script>
+  </body>
+</html>
