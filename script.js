@@ -19,14 +19,19 @@ const quizResultSubtitle = document.getElementById("quizResultSubtitle");
 const quizTabButton = document.getElementById("quizTabButton");
 const radarTabButton = document.getElementById("radarTabButton");
 const videoTabButton = document.getElementById("videoTabButton");
+const rolesTabButton = document.getElementById("rolesTabButton");
 const accessTabButton = document.getElementById("accessTabButton");
 const quizTabPanel = document.getElementById("quizTabPanel");
 const radarTabPanel = document.getElementById("radarTabPanel");
 const videoTabPanel = document.getElementById("videoTabPanel");
+const rolesTabPanel = document.getElementById("rolesTabPanel");
 const accessTabPanel = document.getElementById("accessTabPanel");
 const missionVideo = document.getElementById("missionVideo");
 const videoSwitchButtons = document.querySelectorAll(".video-switch-button");
 const videoTransitionOverlay = document.getElementById("videoTransitionOverlay");
+const rolesTitle = document.getElementById("rolesTitle");
+const rolesSubtitle = document.getElementById("rolesSubtitle");
+const rolesGrid = document.getElementById("rolesGrid");
 const accessTitle = document.getElementById("accessTitle");
 const accessForm = document.getElementById("accessForm");
 const accessInputs = document.querySelectorAll(".access-code-input");
@@ -37,6 +42,7 @@ const accessResultLabel = document.getElementById("accessResultLabel");
 const accessResultTitle = document.getElementById("accessResultTitle");
 const accessResultSubtitle = document.getElementById("accessResultSubtitle");
 const accessGateOverlay = document.getElementById("accessGateOverlay");
+const accessVictoryVideo = document.getElementById("accessVictoryVideo");
 const radarTitle = document.getElementById("radarTitle");
 const radarOverview = document.getElementById("radarOverview");
 const startRadarButton = document.getElementById("startRadarButton");
@@ -65,6 +71,7 @@ const radarFinalSubtitle = document.getElementById("radarFinalSubtitle");
 const TEAM_CONTENT = window.TEAM_CONTENT || {};
 const TEAM_QUIZZES = window.TEAM_QUIZZES || {};
 const TEAM_RADARS = window.TEAM_RADARS || {};
+const ROLES_DATA = window.ROLES_DATA || {};
 const TEAM_ACCESS_CODES = window.TEAM_ACCESS_CODES || {};
 const STORAGE_KEY = "military-quest-team";
 const QUIZ_STORAGE_KEY = "military-quest-quiz-state";
@@ -78,20 +85,26 @@ const RADAR_REVEAL_GAP_DELAY = 180;
 const RADAR_START_COUNTDOWN_SECONDS = 3;
 const ACCESS_SUCCESS_DELAY = 1300;
 const VIDEO_SOURCES = {
-  w: "./assets/insf.mp4",
-  a: "./assets/as1.mp4",
-  s: "./assets/as2.mp4",
-  d: "./assets/as3.mp4",
+  1: "./assets/videos/rep1.mp4",
+  2: "./assets/videos/Rep2.mp4",
+  3: "./assets/videos/Rep3.mp4",
+  4: "./assets/videos/Rep4.mp4",
+  5: "./assets/videos/Rep5.mp4",
+  6: "./assets/videos/Rep6.mp4",
+  7: "./assets/videos/Rep7.mp4",
+  8: "./assets/videos/Rep8.mp4",
+  9: "./assets/videos/Rep9.mp4",
 };
 const VIDEO_HOTKEYS = {
-  w: "w",
-  a: "a",
-  s: "s",
-  d: "d",
-  1: "w",
-  2: "a",
-  3: "s",
-  4: "d",
+  1: "1",
+  2: "2",
+  3: "3",
+  4: "4",
+  5: "5",
+  6: "6",
+  7: "7",
+  8: "8",
+  9: "9",
 };
 
 let currentTeam = null;
@@ -103,7 +116,7 @@ let radarScanTimeoutId = null;
 let radarRevealTimeoutId = null;
 let radarCountdownTimeoutId = null;
 let radarState = createDefaultRadarState();
-let activeVideoKey = "w";
+let activeVideoKey = "1";
 let videoTransitionTimeoutId = null;
 let isVideoTransitioning = false;
 let accessResultTimeoutId = null;
@@ -340,6 +353,28 @@ function playMissionVideoWithSound() {
   }
 }
 
+function playAccessVictoryVideo() {
+  if (!accessVictoryVideo) {
+    return;
+  }
+
+  try {
+    accessVictoryVideo.currentTime = 0;
+  } catch (error) {
+    // no-op
+  }
+
+  accessVictoryVideo.muted = false;
+  const playAttempt = accessVictoryVideo.play();
+
+  if (playAttempt && typeof playAttempt.catch === "function") {
+    playAttempt.catch(() => {
+      accessVictoryVideo.muted = true;
+      void accessVictoryVideo.play().catch(() => {});
+    });
+  }
+}
+
 function showVideoTransitionOverlay() {
   if (!videoTransitionOverlay) {
     return;
@@ -454,6 +489,82 @@ function getTeamAccessCode(teamName) {
   return TEAM_ACCESS_CODES[teamName] || null;
 }
 
+function renderRoles() {
+  if (!rolesGrid || !rolesTitle || !rolesSubtitle) {
+    return;
+  }
+
+  rolesTitle.textContent = ROLES_DATA.title || "Ролі команди";
+  rolesSubtitle.textContent =
+    ROLES_DATA.subtitle || "Кожен учасник має свою функцію в проходженні місії.";
+  rolesGrid.innerHTML = "";
+
+  const roleItems = Array.isArray(ROLES_DATA.items) ? ROLES_DATA.items : [];
+
+  roleItems.forEach((role) => {
+    const card = document.createElement("article");
+    card.className = "role-card";
+    card.tabIndex = 0;
+
+    const media = document.createElement("div");
+    media.className = "role-card-media";
+
+    if (role.image) {
+      const image = document.createElement("img");
+      image.className = "role-card-image";
+      image.src = role.image;
+      image.alt = role.title;
+      media.appendChild(image);
+    } else {
+      const placeholder = document.createElement("div");
+      placeholder.className = "role-card-placeholder";
+      placeholder.textContent = "Місце для зображення";
+      media.appendChild(placeholder);
+    }
+
+    const overlay = document.createElement("div");
+    overlay.className = "role-card-overlay";
+
+    const icon = document.createElement("div");
+    icon.className = "role-card-icon";
+    icon.textContent = role.icon || "•";
+
+    const title = document.createElement("h4");
+    title.className = "role-card-title";
+    title.textContent = role.title;
+
+    const description = document.createElement("p");
+    description.className = "role-card-description";
+    description.textContent = role.description;
+
+    overlay.append(icon, title, description);
+    card.append(media, overlay);
+
+    card.addEventListener("click", () => {
+      const isExpanded = card.classList.contains("is-expanded");
+
+      rolesGrid.querySelectorAll(".role-card").forEach((roleCard) => {
+        roleCard.classList.remove("is-expanded");
+      });
+
+      if (!isExpanded) {
+        card.classList.add("is-expanded");
+      }
+    });
+
+    card.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") {
+        return;
+      }
+
+      event.preventDefault();
+      card.click();
+    });
+
+    rolesGrid.appendChild(card);
+  });
+}
+
 function clearAccessTimers() {
   if (accessResultTimeoutId) {
     window.clearTimeout(accessResultTimeoutId);
@@ -478,6 +589,15 @@ function hideAccessResultOverlay() {
 function hideAccessGateOverlay() {
   if (!accessGateOverlay) {
     return;
+  }
+
+  if (accessVictoryVideo) {
+    accessVictoryVideo.pause();
+    try {
+      accessVictoryVideo.currentTime = 0;
+    } catch (error) {
+      // no-op
+    }
   }
 
   accessGateOverlay.classList.add("hidden");
@@ -545,6 +665,9 @@ function showAccessResult(isSuccess) {
       accessGateOverlay.classList.remove("hidden");
       void accessGateOverlay.offsetWidth;
       accessGateOverlay.classList.add("is-open");
+      accessGateTimeoutId = window.setTimeout(() => {
+        playAccessVictoryVideo();
+      }, 980);
     }, ACCESS_SUCCESS_DELAY);
   } else {
     accessResultTimeoutId = window.setTimeout(() => {
@@ -641,6 +764,7 @@ function setActiveTab(tabName) {
   const isQuizTab = tabName === "quiz";
   const isRadarTab = tabName === "radar";
   const isVideoTab = tabName === "video";
+  const isRolesTab = tabName === "roles";
   const isAccessTab = tabName === "access";
 
   quizTabButton.classList.toggle("active", isQuizTab);
@@ -654,6 +778,10 @@ function setActiveTab(tabName) {
   videoTabButton.classList.toggle("active", isVideoTab);
   videoTabButton.setAttribute("aria-selected", String(isVideoTab));
   videoTabPanel.classList.toggle("hidden", !isVideoTab);
+
+  rolesTabButton.classList.toggle("active", isRolesTab);
+  rolesTabButton.setAttribute("aria-selected", String(isRolesTab));
+  rolesTabPanel.classList.toggle("hidden", !isRolesTab);
 
   accessTabButton.classList.toggle("active", isAccessTab);
   accessTabButton.setAttribute("aria-selected", String(isAccessTab));
@@ -1400,6 +1528,7 @@ function showHome(teamName) {
   renderQuiz(teamName);
   resetRadarState();
   renderRadar(teamName);
+  renderRoles();
   renderAccess(teamName);
   setActiveTab(activeTab);
 
@@ -1452,6 +1581,10 @@ radarTabButton.addEventListener("click", () => {
 
 videoTabButton.addEventListener("click", () => {
   setActiveTab("video");
+});
+
+rolesTabButton.addEventListener("click", () => {
+  setActiveTab("roles");
 });
 
 accessTabButton.addEventListener("click", () => {

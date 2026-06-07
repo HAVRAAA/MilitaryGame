@@ -92,6 +92,15 @@
             <button
               type="button"
               class="tab-button"
+              id="rolesTabButton"
+              role="tab"
+              aria-selected="false"
+            >
+              Ролі
+            </button>
+            <button
+              type="button"
+              class="tab-button"
               id="accessTabButton"
               role="tab"
               aria-selected="false"
@@ -221,18 +230,23 @@
                   </div>
 
                   <div class="video-switcher" aria-label="Перемикання відео">
-                    <button type="button" class="video-switch-button active" data-video-key="w">W</button>
-                    <button type="button" class="video-switch-button" data-video-key="a">A</button>
-                    <button type="button" class="video-switch-button" data-video-key="s">S</button>
-                    <button type="button" class="video-switch-button" data-video-key="d">D</button>
+                    <button type="button" class="video-switch-button active" data-video-key="1">1</button>
+                    <button type="button" class="video-switch-button active" data-video-key="2">2</button>
+                    <button type="button" class="video-switch-button" data-video-key="3">3</button>
+                    <button type="button" class="video-switch-button" data-video-key="4">4</button>
+                    <button type="button" class="video-switch-button" data-video-key="5">5</button>
+                    <button type="button" class="video-switch-button" data-video-key="6">6</button>
+                    <button type="button" class="video-switch-button" data-video-key="7">7</button>
+                    <button type="button" class="video-switch-button" data-video-key="8">8</button>
+                    <button type="button" class="video-switch-button" data-video-key="9">9</button>
                   </div>
                 </div>
 
                 <div class="video-shell">
-                  <video
-                    id="missionVideo"
-                    class="mission-video"
-                    src="./assets/insf.mp4"
+                    <video
+                      id="missionVideo"
+                      class="mission-video"
+                    src="./assets/videos/rep1.mp4"
                     autoplay
                     loop
                     playsinline
@@ -244,6 +258,22 @@
                     <div class="video-transition-label">TACTICAL SIGNAL SWITCH</div>
                   </div>
                 </div>
+              </div>
+            </section>
+
+            <section class="tab-panel hidden" id="rolesTabPanel" role="tabpanel">
+              <div class="roles-panel">
+                <div class="roles-panel-header">
+                  <div>
+                    <p class="content-label">Ролі</p>
+                    <h3 id="rolesTitle" class="roles-title">Ролі команди</h3>
+                    <p id="rolesSubtitle" class="roles-subtitle">
+                      Кожен учасник має свою функцію в проходженні місії.
+                    </p>
+                  </div>
+                </div>
+
+                <div id="rolesGrid" class="roles-grid"></div>
               </div>
             </section>
 
@@ -286,9 +316,20 @@
                 <div class="access-gate-door access-gate-door-left"></div>
                 <div class="access-gate-door access-gate-door-right"></div>
                 <div class="access-gate-message">
-                  <p class="access-gate-label">Доступ підтверджено</p>
-                  <h4 class="access-gate-title">Вітаємо, ви пройшли цей квест</h4>
-                  <p class="access-gate-copy">Дякуємо за участь.</p>
+                  <div class="access-victory-shell">
+                    <video
+                      id="accessVictoryVideo"
+                      class="access-victory-video"
+                      src="./assets/videos/Rep10.mp4"
+                      playsinline
+                      controls
+                    ></video>
+                  </div>
+                  <div class="access-victory-copy">
+                    <p class="access-gate-label">Фінал місії</p>
+                    <h4 class="access-gate-title">Квест пройдено</h4>
+                    <p class="access-gate-copy">Вітаємо, ви пройшли цей квест. Дякуємо за участь.</p>
+                  </div>
                 </div>
               </div>
             </section>
@@ -299,6 +340,7 @@
     <script src="./team-content.js"></script>
     <script src="./quiz-data.js"></script>
     <script src="./radar-data.js"></script>
+    <script src="./roles-data.js"></script>
     <script src="./access-codes.js"></script>
     <script src="./script.js"></script>
   </body>
